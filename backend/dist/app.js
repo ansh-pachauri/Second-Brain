@@ -18,6 +18,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("./db");
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
+const random_1 = require("./random");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 //making the routes
@@ -79,23 +80,20 @@ app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
+// userMiddleware,
 app.post("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
     const type = req.body.type;
-    try {
-        yield db_1.ContentModel.create({
-            link,
-            type,
-            title: req.body.title,
-            //@ts-ignore 
-            userId: req.user._id,
-            tags: []
-        });
-        res.json({ message: "content created" });
-    }
-    catch (err) {
-        res.json({ message: "Content is not created" });
-    }
+    console.log(link, type);
+    yield db_1.ContentModel.create({
+        link,
+        type,
+        // title : req.body.title,
+        //@ts-ignore    
+        userId: req.userId,
+        tags: []
+    });
+    res.json({ message: "content created" });
 }));
 app.get("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
@@ -118,27 +116,63 @@ app.delete("/api/v1/content", middleware_1.userMiddleware, (req, res) => __await
         message: "deleted"
     });
 }));
-app.post("/api/v1/brain/share", (req, res) => {
-    const id = req.body.userId;
-});
-app.get("/api/v1/brain/:shareLink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.body.userId;
-    const content = {
-        title: req.query.title,
-        links: req.query.links,
-        type: req.query.type,
-        tags: req.query.tags,
-        id: req.query.id
-    };
-    try {
-        const shareLink = yield db_1.LinkModel.create({
-            userId: userId,
-            content: content
+app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const share = req.body.share;
+    if (share) {
+        const existingShareLink = yield db_1.LinkModel.findOne({
+            //@ts-ignore
+            userId: req.userId
         });
+        if (existingShareLink) {
+            res.json({
+                hash: existingShareLink.hash
+            });
+            return;
+        }
+        const hash = (0, random_1.random)(10);
+        yield db_1.LinkModel.create({
+            //@ts-ignore
+            userId: req.userId,
+            hash: hash
+        });
+        res.json({ hash });
     }
-    catch (_a) {
-        res.json({ message: "Link is not created" });
+    else {
+        yield db_1.LinkModel.deleteOne({
+            //@ts-ignore
+            userId: req.userId
+        });
+        res.json({ message: "share link deleted" });
     }
+}));
+app.get("/api/v1/brain/:shareLink", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.shareLink;
+    const link = yield db_1.LinkModel.findOne({
+        hash
+    });
+    if (!link) {
+        res.json({
+            message: "link not found incorrest input"
+        });
+        return;
+    }
+    const content = yield db_1.ContentModel.find({
+        userId: link.userId
+    });
+    console.log(link);
+    const user = yield db_1.UserModel.findOne({
+        _id: link.userId
+    });
+    if (!user) {
+        res.status(411).json({
+            message: "user not found, error should ideally not happen"
+        });
+        return;
+    }
+    res.json({
+        userName: user.userName,
+        content: content
+    });
 }));
 app.listen(3000, () => {
     console.log("server is running on port 3000");

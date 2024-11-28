@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LinkModel = exports.TagModel = exports.ContentModel = exports.UserModel = void 0;
+exports.LinkModel = exports.ContentModel = exports.UserModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 mongoose_1.default.connect("mongodb+srv://admin:V6GJrhxOWBpCB2Gb@cluster0.hnft8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/test");
 //user schema
@@ -45,20 +45,15 @@ exports.UserModel = (0, mongoose_1.model)("User", UserSchema);
 //content schema
 const ContentSchema = new mongoose_1.Schema({
     title: String,
-    links: String,
+    link: String,
     tags: [{ type: mongoose_1.default.Types.ObjectId, ref: "Tag" }],
+    type: String,
     userId: { type: mongoose_1.default.Types.ObjectId, ref: "User", required: true },
 });
 exports.ContentModel = (0, mongoose_1.model)("Content", ContentSchema);
-//tags schema
-const TagSchema = new mongoose_1.Schema({
-    title: String,
-    userId: [{ type: mongoose_1.default.Types.ObjectId, required: true }]
-});
-exports.TagModel = (0, mongoose_1.model)("Tag", TagSchema);
 //Links Schema
 const LinkSchema = new mongoose_1.Schema({
-    userId: { type: mongoose_1.default.Types.ObjectId, ref: "User", required: true },
+    userId: { type: mongoose_1.default.Types.ObjectId, ref: "User", required: true, unique: true },
     hash: String
 });
 exports.LinkModel = (0, mongoose_1.model)("Links", LinkSchema);

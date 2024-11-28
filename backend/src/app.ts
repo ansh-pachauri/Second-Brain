@@ -5,6 +5,7 @@ import { ContentModel, LinkModel, UserModel } from "./db";
 
 import {jwtSecret} from "./config";
 import { userMiddleware } from "./middleware";
+import { random } from "./random";
 
 
 const app = express(); 
@@ -80,24 +81,26 @@ app.post("/api/v1/signin", async (req, res) =>{
     }
     
 })
+// userMiddleware,
 
 app.post("/api/v1/content",userMiddleware, async (req, res) =>{
    const link = req.body.link;
    const type=  req.body.type;
-   try{
-    await ContentModel.create({
-        link,
-        type,
-        title : req.body.title,
-        //@ts-ignore 
-        userId:req.user._id,
-        tags: []
-    });
-    res.json({message : "content created"});
-   }
-   catch(err){
-    res.json({message : "Content is not created"})
-   }
+   console.log(link, type);
+   
+   await ContentModel.create({
+    link,
+    type,
+    // title : req.body.title,
+    //@ts-ignore    
+    userId:req.userId,
+    tags: []
+});
+
+
+res.json({message : "content created"});
+
+
 })
 
 app.get("/api/v1/content",userMiddleware, async (req, res) =>{
@@ -125,29 +128,68 @@ app.delete("/api/v1/content",userMiddleware,async  (req, res) =>{
     })
 
 })
-app.post("/api/v1/brain/share",  (req, res) =>{
-    const id = req.body.userId;
+app.post("/api/v1/brain/share",userMiddleware, async  (req, res) =>{
+    const share = req.body.share;
+    if(share){
+        const existingShareLink = await LinkModel.findOne({
+            //@ts-ignore
+            userId: req.userId
+        });
+        if(existingShareLink){
+            res.json({
+                hash: existingShareLink.hash
+            })
+            return;
+        }
+        const hash = random(10);
+        await LinkModel.create({
+            //@ts-ignore
+            userId:req.userId,  
+            hash:hash
+        })
+
+        res.json({hash})
+    }else{
+        await LinkModel.deleteOne({
+            //@ts-ignore
+            userId:req.userId
+        });
+        res.json({message: "share link deleted"})   
+    }
+
 
 })
 
-app.get("/api/v1/brain/:shareLink", async (req, res) =>{
-    const userId = req.body.userId;
-    const content = {
-        title: req.query.title,
-        links: req.query.links,
-        type: req.query.type,
-        tags: req.query.tags,
-        id: req.query.id
-    }
+app.get("/api/v1/brain/:shareLink",userMiddleware, async (req, res) =>{
+   const hash =  req.params.shareLink;
+   const link = await LinkModel.findOne({
+            hash
+   });
+   if(!link){
+    res.json({
+        message: "link not found incorrest input"
+    })
+    return;
+   }
+   const content = await ContentModel.find({
+    userId: link.userId
+   })
+   console.log(link);
 
-    try{
-        const shareLink = await LinkModel.create({
-            userId: userId,
-            content: content
-        })
-    }catch{
-        res.json({message : "Link is not created"})
-    }
+   const user = await UserModel.findOne({
+        _id: link.userId
+   })
+   if (!user) {
+    res.status(411).json({
+        message: "user not found, error should ideally not happen"
+    })
+    return;
+}
+
+res.json({
+    userName: user.userName,
+    content: content
+})
 })
 
 app.listen(3000, ()=>{
