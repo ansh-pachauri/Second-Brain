@@ -15,20 +15,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const zod_1 = require("zod");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const cors_1 = __importDefault(require("cors"));
 const db_1 = require("./db");
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
 const random_1 = require("./random");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.use((0, cors_1.default)());
 //making the routes
 app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requireBody = zod_1.z.object({
         userName: zod_1.z.string().min(3).max(20),
         password: zod_1.z.string().min(3).max(20).trim()
     });
+    console.log(req.body);
     //parsing the body 
     const parseBody = requireBody.safeParse(req.body);
+    console.log(parseBody);
     if (!parseBody.success) {
         res.json({
             message: "Formate is incorrect"

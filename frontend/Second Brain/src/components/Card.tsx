@@ -1,7 +1,7 @@
 import { Pensil } from "../icons/Pensil";
 import { Share } from "../icons/Share";
 import { Delet } from "../icons/Delet";
-
+    
 interface CardProps {
   title: string;
   link: string;
@@ -13,7 +13,7 @@ export const Card = ({ title, link, type }: CardProps) => {
     <div>
         
         <div className={`border-2 border-gray-300 bg-white rounded-md p-4 shadow-md mx-auto ${
-        type === "youtube" ? "w-[400px] h-[320px]" : "w-[400px] h-[100%]"
+        type === "youtube" ? "w-[300px] h-[320px]" : "w-[400px] h-[100%]"
     }`}>
       <div className="flex flex-row justify-between items-center mb-2">
         <div>

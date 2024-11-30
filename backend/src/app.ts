@@ -1,6 +1,7 @@
 import express from "express";
 import {z} from "zod";
 import jwt from "jsonwebtoken";
+import cors from "cors";
 import { ContentModel, LinkModel, UserModel } from "./db";
 
 import {jwtSecret} from "./config";
@@ -9,7 +10,8 @@ import { random } from "./random";
 
 
 const app = express(); 
-app.use(express.json());    
+app.use(express.json());  
+app.use(cors());
 
 //making the routes
 app.post("/api/v1/signup", async (req, res) =>{
@@ -17,9 +19,12 @@ app.post("/api/v1/signup", async (req, res) =>{
         userName: z.string().min(3).max(20),
         password: z.string().min(3).max(20).trim()
     });
-
+    console.log(req.body);
+    
     //parsing the body 
     const parseBody = requireBody.safeParse(req.body);
+    console.log(parseBody);
+    
     if (!parseBody.success) {
         res.json({
             message : "Formate is incorrect"
