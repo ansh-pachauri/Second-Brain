@@ -7,19 +7,27 @@ interface CardProps {
   title: string;
   link: string;
   type: "twitter" | "youtube";
+  contentId: string;
 }
 
-export const Card = ({ title, link, type }: CardProps) => {
-  const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/v1/content`, {
-      headers: {
-        Authorization: localStorage.getItem("token")
-      }
-    })
-    window.location.reload();
+export const Card = ({ title, link, type, contentId }: CardProps) => {
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/content/${contentId}`, {
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete:", error);
+    }
   }
 
+  
+
  
+
   return (
     <div >
         
@@ -34,7 +42,7 @@ export const Card = ({ title, link, type }: CardProps) => {
           <h2 className="text-lg font-bold">{title}</h2>
         </div>
         <div>
-          <Share size="lg" />
+          <Share size="lg"  />
         </div>
         <div>
           <Delet onClick={handleDelete} size="lg" />

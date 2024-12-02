@@ -13,14 +13,16 @@ export default function Home() {
           <Buttons />
         </div>
         <div className="flex flex-wrap gap-4 justify-center">
-          <Card
-            type="twitter"
-            title="My First Tweet"
-            link="https://twitter.com/elonmusk/status/1862752573830115448"
-          />
-
-          {content?.map(({type, title, link})=>{
-            return <Card type={type} title={title} link={link} />
+          <Card title="Obsesed" type="twitter"
+           link="https://twitter.com/hamptonism/status/1859921077994156519" contentId="123" />
+          {content?.map(({type, title, link, _id}) => {
+            return <Card 
+              key={_id}
+              contentId={_id} 
+              type={type} 
+              title={title} 
+              link={link} 
+            />
           })}
         </div>
       </div>

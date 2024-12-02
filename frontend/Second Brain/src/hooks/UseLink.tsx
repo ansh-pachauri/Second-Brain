@@ -5,7 +5,7 @@ export default function useLink(){
     const [link, setLink] = useState("");
 
     useEffect(()=>{
-        axios.get("http://localhost:3000/api/v1/brain/:shareLink",{
+        axios.get(`${import.meta.env.VITE_API_URL}/brain/:shareLink`,{
             headers:{
                 Authorization: localStorage.getItem("token")
             }

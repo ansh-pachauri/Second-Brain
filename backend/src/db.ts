@@ -1,6 +1,7 @@
 import mongoose, { model, Schema } from "mongoose";
-
-mongoose.connect("mongodb+srv://admin:V6GJrhxOWBpCB2Gb@cluster0.hnft8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/test");
+import dotenv from "dotenv";
+dotenv.config();    
+mongoose.connect(process.env.MONGO_URL as string);
 
 //user schema
 const UserSchema = new Schema({

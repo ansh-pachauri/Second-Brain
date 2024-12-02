@@ -3,13 +3,17 @@ import { Copy } from "../icons/Copy";
 import { X } from "../icons/X";
 export const SharePage = ({ onClose }: { onClose: () => void }) => {
   
-  const handleShare = ()=>{
-    axios.post("http://localhost:3000/api/v1/brain/share",{
+  const handleShare = async ()=>{
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/brain/share`,{
+      share: true
+    },{
       headers:{
         Authorization: localStorage.getItem("token")
       }
-    })
-    alert("Link Copied")
+    });
+    const shareUrl = `${import.meta.env.VITE_FRONTEND_URL}/share/${response.data.hash}`;
+    navigator.clipboard.writeText(shareUrl);
+    alert("Link Copied  to clipboard")
   }
   return (
     <div className="border-2 border-gray-300 bg-white rounded-md p-4 shadow-md w-1/3 mx-auto">

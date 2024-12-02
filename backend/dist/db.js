@@ -32,10 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkModel = exports.ContentModel = exports.UserModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://admin:V6GJrhxOWBpCB2Gb@cluster0.hnft8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/test");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+mongoose_1.default.connect(process.env.MONGO_URL);
 //user schema
 const UserSchema = new mongoose_1.Schema({
     userName: { type: String, required: true },
