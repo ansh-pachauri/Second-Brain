@@ -9,20 +9,27 @@ export default function AddContent({ onClose }: { onClose: () => void }) {
     const tagsRef = useRef<HTMLInputElement>(null);
     
     async function addContent(){
-        const title = titleRef.current?.value;
-        const link = linkRef.current?.value;
-        const tags = tagsRef.current?.value;
+        try {
+            const title = titleRef.current?.value;
+            const link = linkRef.current?.value;
+            const type = tagsRef.current?.value;
 
-
-        await axios.post("http://localhost:3000/api/v1/content",{
-            title,
-            link,
-            tags
-        },{
-            headers:{
-                Authorization : `Bearer ${localStorage.getItem("token")}`
-            }
-        })
+            await axios.post("http://localhost:3000/api/v1/content", {
+                title,
+                link,
+                type
+            }, {
+                headers: {
+                    Authorization: localStorage.getItem("token")
+                }
+            });
+            
+            // await content();
+            onClose();
+            window.location.reload();
+        } catch (error) {
+            console.error("Error adding content:", error);
+        }
     }
   return (
     <div className="border-2 border-gray-300 bg-white rounded-md p-4 shadow-md w-1/3 mx-auto">

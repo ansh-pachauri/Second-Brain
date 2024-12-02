@@ -1,6 +1,7 @@
 import { Pensil } from "../icons/Pensil";
 import { Share } from "../icons/Share";
 import { Delet } from "../icons/Delet";
+import axios from "axios";
     
 interface CardProps {
   title: string;
@@ -9,8 +10,18 @@ interface CardProps {
 }
 
 export const Card = ({ title, link, type }: CardProps) => {
+  const handleDelete = () => {
+    axios.delete(`http://localhost:3000/api/v1/content`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+      }
+    })
+    window.location.reload();
+  }
+
+ 
   return (
-    <div>
+    <div >
         
         <div className={`border-2 border-gray-300 bg-white rounded-md p-4 shadow-md mx-auto ${
         type === "youtube" ? "w-[300px] h-[320px]" : "w-[400px] h-[100%]"
@@ -26,7 +37,7 @@ export const Card = ({ title, link, type }: CardProps) => {
           <Share size="lg" />
         </div>
         <div>
-          <Delet size="lg" />
+          <Delet onClick={handleDelete} size="lg" />
         </div>
       </div>
       <div className={`${

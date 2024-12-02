@@ -12,7 +12,7 @@ export default function Home() {
         <div className="flex flex-row items-end justify-end m-8">
           <Buttons />
         </div>
-        <div className="flex flex-row gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center">
           <Card
             type="twitter"
             title="My First Tweet"

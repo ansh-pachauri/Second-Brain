@@ -6,7 +6,7 @@ export default function useContent(){
     useEffect(() => {
         axios.get("http://localhost:3000/api/v1/content", {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
+                Authorization: localStorage.getItem("token")
             }
         })
           .then((response)=>{

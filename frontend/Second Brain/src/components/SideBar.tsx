@@ -11,7 +11,7 @@ export const SideBar = () => {
           <div className="flex flex-row">
             <Brian />
             <h1 className="text-3xl whitespace-nowrap font-bold italic items-start m-8 text-[#5143E4]">
-              Second Brain
+              BrainOpedia
             </h1>
           </div>
         </div>
